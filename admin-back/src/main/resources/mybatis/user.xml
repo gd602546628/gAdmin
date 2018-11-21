@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blog.dao.UserDao">
+    <select id="getUserByName" resultType="com.example.blog.domain.User">
+         select * from user where name=#{name};
+    </select>
+
+    <select id="getUserById" resultType="com.example.blog.domain.User">
+        select * from user where id=#{id};
+    </select>
+
+    <select id="getUserByToken" resultType="com.example.blog.domain.User">
+        select * from user where token=#{token};
+    </select>
+
+    <select id="getUserByAccount" resultType="com.example.blog.domain.User">
+        select * from user where name=#{arg0} and password=#{arg1};
+    </select>
+
+    <update id="setToken">
+        update user set token=#{arg0} where id=#{arg1};
+    </update>
+
+    <insert id="insertPermission">
+        insert into permission (name,path) values (#{name},#{path});
+    </insert>
+
+    <insert id="insertRole" useGeneratedKeys="true" keyProperty="id" parameterType="com.example.blog.domain.user.Role">
+        insert into role (name) values (#{name});
+    </insert>
+
+    <insert id="insertRolePermission">
+        insert into role_permission (roleId,permissionId) values
+        <foreach collection="ids" item="permissionId" index="i" separator=",">
+            (#{roleId},#{permissionId})
+        </foreach>
+    </insert>
+    
+    <select id="getRoleByUserId" resultType="com.example.blog.domain.user.Role">
+        select
+        r.id id,
+        r.name name
+        from role r
+        inner join user_role ur on r.id=ur.roleId and #{userId}=ur.userId;
+    </select>
+
+    <select id="getPermissionByRole" resultType="com.example.blog.domain.user.Permission">
+        select
+         p.name name,
+         p.id id,
+         p.path path
+         from permission p
+         inner join role_permission rp on p.id = rp.permissionId and rp.roleId=#{roleId};
+    </select>
+</mapper>
